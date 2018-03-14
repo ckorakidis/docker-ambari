@@ -26,12 +26,12 @@ docker network create $NETWORK_NAME
 # Start Docker Cluster
 echo "Starting Cluster"
 
-docker run -P -p 8080:8080 -d --name $DAMBARI_SERVER --net=$NETWORK_NAME ambari-server:1.0
+docker run -P -p 8080:8080 -d --name $DAMBARI_SERVER --hostname $DAMBARI_SERVER.local --net=$NETWORK_NAME ambari-server:1.0
 # ambari-server setup -s
 # ambari-server start
 
 
-# for NODE in ${!DAMBARI_NODE*}
-# do
-# 	docker run -P -d --name ${!NODE} --net=$NETWORK_NAME ambari-centos:1.0
-# done
+for NODE in ${!DAMBARI_NODE*}
+do
+	docker run -P -d --name ${!NODE} --hostname ${!NODE}.local --net=$NETWORK_NAME ambari-agent:1.0
+done
