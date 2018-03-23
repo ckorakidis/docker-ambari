@@ -17,14 +17,15 @@ services:
     container_name: namenode
     ports:
       - "50070:50070"
-    privileged: false
+      - "3000:3000"
+    privileged: true
     depends_on:
       - "ambari-server"
     networks:
       hdp_net:
         ipv4_address: 10.1.0.11
     healthcheck:
-        test: ["CMD", "ssh", "-o", "StrictHostKeyChecking=yes", "ambari-server"]
+        test: ["CMD", "ssh", "ambari-server"]
         interval: 3s
         timeout: 2s
         retries: 10
@@ -33,10 +34,29 @@ services:
     image: ambari-agent:1.0
     hostname: resourcemanager
     container_name: resourcemanager
+    environment:
+      - HIVE_CONF_DIR=/etc/hive/2.6.3.0-235/0/conf.server
     ports:
       - "8088:8088"
+      - "8032:8032"
       - "19888:19888"
-    privileged: false
+      - "50111:50111"
+      - "10000:10000"
+      - "10001:10001"
+      - "9083:9083"
+      - "21000:21000"
+      - "21443:21443"
+      - "10200:10200"
+      - "8188:8188"
+      - "8190:8190"
+      - "2888:2888"
+      - "3888:3888"
+      - "2181:2181"
+      - "9995:9995"
+      - "10015:10015"
+      - "18080:18080"
+      - "8998:8998"
+    privileged: true
     depends_on:
       - "node01"
       - "node02"
@@ -45,9 +65,9 @@ services:
       hdp_net:
         ipv4_address: 10.1.0.12
     healthcheck:
-        test: ["CMD", "ssh", "-o", "StrictHostKeyChecking=yes", "node01"]
-        test: ["CMD", "ssh", "-o", "StrictHostKeyChecking=yes", "node02"]
-        test: ["CMD", "ssh", "-o", "StrictHostKeyChecking=yes", "node03"]
+        test: ["CMD", "ssh", "node01"]
+        test: ["CMD", "ssh", "node02"]
+        test: ["CMD", "ssh", "node03"]
         interval: 3s
         timeout: 2s
         retries: 10
@@ -57,15 +77,16 @@ services:
     hostname: master
     container_name: master
     ports:
-      - "3000:3000"
-    privileged: false
+      - "9000:9000"
+      - "16000:16000"
+    privileged: true
     depends_on:
       - "resourcemanager"
     networks:
       hdp_net:
         ipv4_address: 10.1.0.13
     healthcheck:
-        test: ["CMD", "ssh", "-o", "StrictHostKeyChecking=yes", "resourcemanager"]
+        test: ["CMD", "ssh", "resourcemanager"]
         interval: 3s
         timeout: 2s
         retries: 10
@@ -74,14 +95,16 @@ services:
     image: ambari-agent:1.0
     hostname: node01
     container_name: node01
-    privileged: false
+    ports:
+      - "50075:50075"
+    privileged: true
     depends_on:
       - "namenode"
     networks:
       hdp_net:
         ipv4_address: 10.1.0.14
     healthcheck:
-        test: ["CMD", "ssh", "-o", "StrictHostKeyChecking=yes", "namenode"]
+        test: ["CMD", "ssh", "namenode"]
         interval: 3s
         timeout: 2s
         retries: 10
@@ -90,14 +113,16 @@ services:
     image: ambari-agent:1.0
     hostname: node02
     container_name: node02
-    privileged: false
+    ports:
+      - "6188:6188"
+    privileged: true
     depends_on:
       - "namenode"
     networks:
       hdp_net:
         ipv4_address: 10.1.0.15
     healthcheck:
-        test: ["CMD", "ssh", "-o", "StrictHostKeyChecking=yes", "namenode"]
+        test: ["CMD", "ssh", "namenode"]
         interval: 3s
         timeout: 2s
         retries: 10
@@ -106,14 +131,19 @@ services:
     image: ambari-agent:1.0
     hostname: node03
     container_name: node03
-    privileged: false
+    ports:
+      - "16020:16020"
+      - "16030:16030"
+      - "45454:45454"
+      - "8042:8042"
+    privileged: true
     depends_on:
       - "namenode"
     networks:
       hdp_net:
         ipv4_address: 10.1.0.16
     healthcheck:
-        test: ["CMD", "ssh", "-o", "StrictHostKeyChecking=yes", "namenode"]
+        test: ["CMD", "ssh", "namenode"]
         interval: 3s
         timeout: 2s
         retries: 10

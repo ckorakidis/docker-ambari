@@ -4,5 +4,5 @@ echo "Init ssh daemon."
 
 #sleep 3s
 
-/etc/init.d/sshd start
+service ssh start
 #systemctl enable sshd
