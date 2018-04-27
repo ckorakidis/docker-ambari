@@ -6,3 +6,5 @@ echo "Init ssh daemon."
 
 service ssh start
 #systemctl enable sshd
+
+/etc/init.d/ntp start

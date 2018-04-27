@@ -22,7 +22,9 @@ RUN \
   apt-get install -y oracle-java8-installer && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/* && \
-  rm -rf /var/cache/oracle-jdk8-installer
+  rm -rf /var/cache/oracle-jdk8-installer && \
+  apt-get install ntp && \
+  update-rc.d ntp defaults
 
 ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 ENV PATH $PATH:$JAVA_HOME/bin
@@ -34,7 +36,7 @@ COPY files/run_all.sh /opt/bin/
 RUN chmod +x /opt/bin/run_all.sh
 
 # Deploy entrypoint
-COPY files/idle.sh /opt/run/99_idle.sh
+#COPY files/idle.sh /opt/run/99_idle.sh
 COPY files/init-sshd-daemon.sh /opt/run/00_init-sshd-daemon.sh
 RUN chmod +x /opt/run/*.sh
 

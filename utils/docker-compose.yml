@@ -9,87 +9,31 @@ services:
       - "8080:8080"
     networks:
       hdp_net:
-        ipv4_address: 10.1.0.10
+        ipv4_address: 10.1.0.11
 
   namenode:
     image: ambari-agent:1.0
     hostname: namenode
     container_name: namenode
     ports:
+      - "8082:8082"
+      - "8086:8086"
+      - "8090:8090"
+      - "8091:8091"
       - "50070:50070"
-      - "3000:3000"
+      - "50470:50470"
+      - "8886:8886"
     privileged: true
     depends_on:
       - "ambari-server"
     networks:
       hdp_net:
-        ipv4_address: 10.1.0.11
-    healthcheck:
-        test: ["CMD", "ssh", "ambari-server"]
-        interval: 3s
-        timeout: 2s
-        retries: 10
-
-  resourcemanager:
-    image: ambari-agent:1.0
-    hostname: resourcemanager
-    container_name: resourcemanager
-    environment:
-      - HIVE_CONF_DIR=/etc/hive/2.6.3.0-235/0/conf.server
-    ports:
-      - "8088:8088"
-      - "8032:8032"
-      - "19888:19888"
-      - "50111:50111"
-      - "10000:10000"
-      - "10001:10001"
-      - "9083:9083"
-      - "21000:21000"
-      - "21443:21443"
-      - "10200:10200"
-      - "8188:8188"
-      - "8190:8190"
-      - "2888:2888"
-      - "3888:3888"
-      - "2181:2181"
-      - "9995:9995"
-      - "10015:10015"
-      - "18080:18080"
-      - "8998:8998"
-    privileged: true
-    depends_on:
-      - "node01"
-      - "node02"
-      - "node03"
-    networks:
-      hdp_net:
         ipv4_address: 10.1.0.12
     healthcheck:
-        test: ["CMD", "ssh", "node01"]
-        test: ["CMD", "ssh", "node02"]
-        test: ["CMD", "ssh", "node03"]
-        interval: 3s
+        test: ["CMD", "ssh", "ambari-server"]
+        interval: 30s
         timeout: 2s
-        retries: 10
-
-  master:
-    image: ambari-agent:1.0
-    hostname: master
-    container_name: master
-    ports:
-      - "9000:9000"
-      - "16000:16000"
-    privileged: true
-    depends_on:
-      - "resourcemanager"
-    networks:
-      hdp_net:
-        ipv4_address: 10.1.0.13
-    healthcheck:
-        test: ["CMD", "ssh", "resourcemanager"]
-        interval: 3s
-        timeout: 2s
-        retries: 10
+        retries: 3
 
   node01:
     image: ambari-agent:1.0
@@ -97,6 +41,28 @@ services:
     container_name: node01
     ports:
       - "50075:50075"
+      - "50475:50475"
+      - "16030:16030"
+    privileged: true
+    depends_on:
+      - "namenode"
+    networks:
+      hdp_net:
+        ipv4_address: 10.1.0.13
+    healthcheck:
+        test: ["CMD", "ssh", "namenode"]
+        interval: 30s
+        timeout: 2s
+        retries: 3
+
+  node02:
+    image: ambari-agent:1.0
+    hostname: node02
+    container_name: node02
+    ports:
+      - "50076:50075"
+      - "50476:50475"
+      - "16031:16030"
     privileged: true
     depends_on:
       - "namenode"
@@ -105,16 +71,18 @@ services:
         ipv4_address: 10.1.0.14
     healthcheck:
         test: ["CMD", "ssh", "namenode"]
-        interval: 3s
+        interval: 30s
         timeout: 2s
-        retries: 10
+        retries: 3
 
-  node02:
+  node03:
     image: ambari-agent:1.0
-    hostname: node02
-    container_name: node02
+    hostname: node03
+    container_name: node03
     ports:
-      - "6188:6188"
+      - "50077:50075"
+      - "50477:50475"
+      - "16032:16030"
     privileged: true
     depends_on:
       - "namenode"
@@ -123,30 +91,123 @@ services:
         ipv4_address: 10.1.0.15
     healthcheck:
         test: ["CMD", "ssh", "namenode"]
-        interval: 3s
+        interval: 30s
         timeout: 2s
-        retries: 10
+        retries: 3
 
-  node03:
+  resourcemanager:
     image: ambari-agent:1.0
-    hostname: node03
-    container_name: node03
+    hostname: resourcemanager
+    container_name: resourcemanager
     ports:
-      - "16020:16020"
-      - "16030:16030"
+      - "8088:8088"
+      - "8025:8025"
+      - "8030:8030"
+      - "8141:8141"
       - "45454:45454"
       - "8042:8042"
+      - "10200:10200"
+      - "8188:8188"
     privileged: true
     depends_on:
-      - "namenode"
+      - "node01"
+      - "node02"
+      - "node03"
     networks:
       hdp_net:
         ipv4_address: 10.1.0.16
     healthcheck:
-        test: ["CMD", "ssh", "namenode"]
-        interval: 3s
+        test: ["CMD", "ssh", "node01"]
+        test: ["CMD", "ssh", "node02"]
+        test: ["CMD", "ssh", "node03"]
+        interval: 30s
         timeout: 2s
-        retries: 10
+        retries: 3
+
+  master:
+    image: ambari-agent:1.0
+    hostname: master
+    container_name: master
+    ports:
+      - "18080:18080"
+      - "18081:18081"
+      - "50090:50090"
+      - "9995:9995"
+    privileged: true
+    depends_on:
+      - "resourcemanager"
+    networks:
+      hdp_net:
+        ipv4_address: 10.1.0.17
+    healthcheck:
+        test: ["CMD", "ssh", "resourcemanager"]
+        interval: 30s
+        timeout: 2s
+        retries: 3
+
+  db:
+    image: ambari-agent:1.0
+    hostname: db
+    container_name: db
+    ports:
+      - "21000:21000"
+      - "21443:21443"
+      - "19888:19888"
+      - "9060:9060"
+    privileged: true
+    depends_on:
+      - "master"
+    networks:
+      hdp_net:
+        ipv4_address: 10.1.0.18
+    healthcheck:
+        test: ["CMD", "ssh", "master"]
+        interval: 30s
+        timeout: 2s
+        retries: 3
+
+  meta:
+    image: ambari-agent:1.0
+    hostname: meta
+    container_name: meta
+    ports:
+      - "50111:50111"
+      - "16010:16010"
+      - "9999:9999"
+      - "9083:9083"
+      - "10001:10001"
+      - "10502:10502"
+    privileged: true
+    depends_on:
+      - "db"
+    networks:
+      hdp_net:
+        ipv4_address: 10.1.0.19
+    healthcheck:
+        test: ["CMD", "ssh", "db"]
+        interval: 30s
+        timeout: 2s
+        retries: 3
+
+
+  admin:
+    image: ambari-agent:1.0
+    hostname: admin
+    container_name: admin
+    ports:
+      - "3000:3000"
+      - "6188:6188"
+    privileged: true
+    depends_on:
+      - "meta"
+    networks:
+      hdp_net:
+        ipv4_address: 10.1.0.20
+    healthcheck:
+        test: ["CMD", "ssh", "meta"]
+        interval: 30s
+        timeout: 2s
+        retries: 3
 
 networks:
   hdp_net:
