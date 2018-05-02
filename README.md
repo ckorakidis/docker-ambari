@@ -41,7 +41,7 @@ Based on https://github.com/arturobayo/docker-ambari
 | Activity Explorer | meta |  |
 | [Atlas Metadata Server](https://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.6.3/bk_reference/content/atlas-ports.html) | meta | 21000, 21443 |
 | [History Server](https://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.6.4/bk_reference/content/mapreduce-ports.html) | meta | 19888 |
-| HST Server | meta | 9060 |
+| HST Server | meta | 9060, 9441 |
 | [Grafana](https://hortonworks.com/tutorial/hortonworks-sandbox-guide/section/3/) | admin | 3000 |
 | ZooKeeper Server | admin |  |
 | Metrics Collector | admin | 6188 |
